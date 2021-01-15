@@ -38,6 +38,14 @@ class ClientsController < ApplicationController
     @client.destroy
   end
 
+  #bring the UF
+  def uf
+    @clients = Client.all
+
+    render json: @clients
+    
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_client
