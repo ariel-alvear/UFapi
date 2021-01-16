@@ -40,10 +40,10 @@ class ClientsController < ApplicationController
 
   #bring the UF
   def uf
-    @clients = Client.all
-
-    render json: @clients
-    
+    api_url = "https://mindicador.cl/api/uf/#{(params[:date])}"
+    response = HTTParty.get(api_url)
+    responsetohash = JSON.parse(response.read_body)
+    render json: responsetohash['serie'][0]['valor']
   end
 
   private
