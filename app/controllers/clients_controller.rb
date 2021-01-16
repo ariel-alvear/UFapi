@@ -46,6 +46,9 @@ class ClientsController < ApplicationController
     render json: responsetohash['serie'][0]['valor']
   end
 
+  def my_requests
+    CODIGO QUE TE DICE POR CLIENTE CUANTAS HIZO
+  end
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_client
