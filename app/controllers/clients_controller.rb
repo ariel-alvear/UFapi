@@ -38,16 +38,24 @@ class ClientsController < ApplicationController
     @client.destroy
   end
 
-  #bring the UF
+  #bring the UF value
   def uf
     api_url = "https://mindicador.cl/api/uf/#{(params[:date])}"
     response = HTTParty.get(api_url)
     responsetohash = JSON.parse(response.read_body)
-    render json: responsetohash['serie'][0]['valor']
+    if responsetohash['serie'][0].nil?
+      'fecha no existe'
+    elsif request.headers['X-CLIENT'].present?
+      Client.create(name: name, request_date: "#{params[:date]}", ufvalue: responsetohash['serie'][0]['valor'] )
+      render json: responsetohash['serie'][0]['valor']
+    else
+        render json: 'falta colocar key = X-CLIENT y en Header su nombre de cliente'
+    end
   end
 
   def my_requests
-    CODIGO QUE TE DICE POR CLIENTE CUANTAS HIZO
+    name = params[:name]
+    render json: Client.where(name: name)
   end
   private
     # Use callbacks to share common setup or constraints between actions.
