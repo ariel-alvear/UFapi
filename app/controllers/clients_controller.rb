@@ -44,18 +44,29 @@ class ClientsController < ApplicationController
     response = HTTParty.get(api_url)
     responsetohash = JSON.parse(response.read_body)
     if responsetohash['serie'][0].nil?
-      'fecha no existe'
-    elsif request.headers['X-CLIENT'].present?
-      Client.create(name: name, request_date: "#{params[:date]}", ufvalue: responsetohash['serie'][0]['valor'] )
-      render json: responsetohash['serie'][0]['valor']
-    else
-        render json: 'falta colocar key = X-CLIENT y en Header su nombre de cliente'
+      return render json: {mensaje:"Valor no existe en esa fecha"}
+    else 
+      if request.headers['X-CLIENT'].present?
+        Client.create(name: request.headers['X-CLIENT'], request_date: "#{params[:date]}", ufvalue: responsetohash['serie'][0]['valor'] )
+        render json: responsetohash['serie'][0]['valor']
+      else
+        return render json: {mensaje:"falta colocar key = X-CLIENT y en Header su nombre de cliente"}
+      end
     end
   end
 
   def my_requests
     name = params[:name]
-    render json: Client.where(name: name)
+    detail = []
+    (Client.where(name: name)).each do |consult|
+      hash1 = {}
+      hash1[:request_date] = consult.request_date
+      hash1[:ufvalue] = consult.ufvalue
+      hash1[:created_at] = consult.created_at
+      detail.push(hash1)
+    end
+    hash = {"Cantidad de consultas": "#{Client.where(name: name).count}", "Detalle de consultas": "#{detail}"}
+    render json: hash
   end
   private
     # Use callbacks to share common setup or constraints between actions.
